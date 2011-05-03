@@ -1,7 +1,7 @@
 { 
-   "name": "17背单词快捷工具", 
+   "name": "扇贝网查词助手", 
    "version": "1.0", 
-   "description": "17bdc背单词Chrome插件，还不错吧", 
+   "description": "扇贝网查词Chrome扩展，还不错吧", 
    "icons": { "16": "logo.gif", "48": "logo.gif", "128": "logo.gif" },
    "permissions": [
    "cookies",
