@@ -1,3 +1,18 @@
+
+input.smallInput{
+	border:1px solid black;FONT-SIZE: 12pt; FONT-STYLE: normal; FONT-VARIANT: normal; FONT-WEIGHT: normal; HEIGHT: 24px; LINE-HEIGHT: normal; color: #EC5800
+	}
+#maintable{
+word-break:keep-all;
+word-wrap: break-all;
+}
+#foot{
+font-size:10px;
+float:right;
+position: absolute;
+bottom: 1px;
+right: 1px;
+}
 .wd {
 color : #ec5800;
 font-size : 1.5em;

@@ -1,8 +1,8 @@
 { 
    "name": "扇贝网查词助手", 
    "version": "1.0", 
-   "description": "扇贝网查词Chrome扩展，还不错吧", 
-   "icons": { "16": "logo.gif", "48": "logo.gif", "128": "logo.gif" },
+   "description": "扇贝网查词Chrome扩展，查词更方便。", 
+   "icons": { "16": "icon_48.png", "48": "icon_48.png", "128": "icon_48.png" },
    "permissions": [
    "cookies",
     "http://shanbay.com/*" , "http://media.17bdc.com/*"

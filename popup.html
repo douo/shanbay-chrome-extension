@@ -1,9 +1,4 @@
 <html><head>
-<style type="text/css">
-input.smallInput{
-	border:1px solid black;FONT-SIZE: 12pt; FONT-STYLE: normal; FONT-VARIANT: normal; FONT-WEIGHT: normal; HEIGHT: 24px; LINE-HEIGHT: normal; color: #EC5800
-	}
-</style>
 <script type="text/JavaScript">
 </script>
  	<meta http-equiv="Content-Type" content="text/html; charset=gb2312">  
@@ -15,14 +10,14 @@ input.smallInput{
 	<script type="text/javascript" src="query.js"> </script>
     <body onload="checkLogin();">
 	
-	<table id="maintable" cellpadding="1" width="230px" align="center" style="word-break:keep-all; word-wrap: break-all;"> 	
+	<table id="maintable" cellpadding="1" width="230px" align="center"> 	
 		<tbody><tr><td> 
 		<div id="logo"><a href="#" onclick="goURL(&quot;http://shanbay.com&quot;);"><img src="logo.gif"></a></div>
 		<div id="ubar"></div>
 		</td></tr> 		
 		<tr><td> 
 		<input type="text" name="word" id="word" style="width:160px;  " class="smallInput" onkeydown="if(event.keyCode==13)mainQuery(document.getElementsByName(&quot;word&quot;)[0].value,writeToFrame);">
-		<input type="button" onclick="mainQuery(document.getElementsByName(&quot;word&quot;)[0].value,writeToFrame);" value="查询">
+		<input type="button" onclick="mainQuery(document.getElementsByName(&quot;word&quot;)[0].value,writeToFrame);" value="查词">
 		</td></tr>
 		<tr><td> 
 		
@@ -32,7 +27,7 @@ input.smallInput{
 		</audio>
 		<tr><td> 
 		<tr><td> 
-		<div style="font-size:10px;float:right; position: absolute; bottom: 1px; right: 1px; "><a href="#" onclick="goURL(&quot;http://shanbay.com&quot;);">扇贝网主页 </a> &nbsp;<a href="#" onclick="goURL(&quot;http://shanbay.com&quot;);">关于</a></div>
+		<div id="foot" style=" "> &nbsp;<a href="#" onclick="goURL(&quot;http://code.google.com/p/shanbay-chrome-extension/&quot;);">反馈</a></div>
 		</td></tr> 
 	</tbody></table>
 </body></html>
