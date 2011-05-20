@@ -1,12 +1,11 @@
 
 
-
 var newWord;
 var logged;
 function checkLogin(){
     chrome.cookies.get(
     {
-        "url" : "http://shanbay.com",   //ºöÂÔÁËÆäËûurl Èç:www.shanbay.com
+        "url" : "http://shanbay.com",
         "name" : "userid"
     }, 
     function(cookie){
@@ -30,7 +29,7 @@ function checkLogin(){
 	    );	
 	}else{
 	    logged = false;
-	    data='<span class="username"><a href="#" onclick="goURL(&quot;http://shanbay.com/accounts/login/&quot;)">µÇÂ¼</a></span>';
+	    data='<span class="username"><a href="#" onclick="goURL(&quot;http://shanbay.com/accounts/login/&quot;)">ç™»å½•</a></span>';
 	    var res = document.getElementById('ubar');
 	    res.innerHTML = data;
 	}
@@ -82,7 +81,7 @@ function mainQuery(word,callback) {
 		    re = /<div id="search-fail">.*?<\/div>/m ;
 		    result =re.exec(data);
 		    if(result){
-			result += ('<input type="button" onclick="goURL(&quot;http://shanbay.com/search/fail/'+escape(word)+'/&quot;)" value="Ìí¼Ó" title="Ìí¼ÓÎª¶ÌÓï»ò¾ä×Ó">');
+			result += ('<input type="button" onclick="goURL(&quot;http://shanbay.com/search/fail/'+escape(word)+'/&quot;)" value="æ·»åŠ " title="æ·»åŠ ä¸ºçŸ­è¯­æˆ–å¥å­">');
 			callback(result);
 		    }else{
 			newWord = false;
@@ -100,17 +99,17 @@ function mainQuery(word,callback) {
 }
 function writeToFrame(data){
     data=data.replace(/<span class="sound">.*?<\/span>/,
-		      '<span><a href="#" onclick="play_single_sound();"><img height="21" width="21" border="0" src="/img/SpeakerOffA20.png" title="·¢Òô" ></a></span>');  //ÊµÏÖ×Ô¼ºµÄÒôÆµ²¥·Å
+		      '<span><a href="#" onclick="play_single_sound();"><img height="21" width="21" border="0" src="/img/SpeakerOffA20.png" title="å‘éŸ³" ></a></span>');  
 
     var res = document.getElementById('result');
     res.innerHTML = data;
-    re = /vocabulary-([\d]*)/i   //javascript ²»Ö§³Ö(?<=exp) !!!
+    re = /vocabulary-([\d]*)/i
     var arrdata = data.match(re);
     if(arrdata[1]){
 	if(newWord){
-	    res.innerHTML += ('<input id="interactive" type="button" onclick="saveWord(&quot;'+arrdata[1]+'&quot;)" value="Ìí¼Óµ¥´Ê" title="µ¥»÷Ìí¼ÓĞÂ´Ê" >');
+	    res.innerHTML += ('<input id="interactive" type="button" onclick="saveWord(&quot;'+arrdata[1]+'&quot;)" value="æ·»åŠ å•è¯" title="å•å‡»æ·»åŠ æ–°è¯" >');
 	}else{
-	    res.innerHTML += ('<input id="interactive" type="button" onclick="goURL(&quot;http://shanbay.com/voc/save/'+arrdata[1]+'/&quot;)" value="ÒÑÌí¼Ó" title="µ¥»÷Ç°ÍùÁ·Ï°" >');
+	    res.innerHTML += ('<input id="interactive" type="button" onclick="goURL(&quot;http://shanbay.com/voc/save/'+arrdata[1]+'/&quot;)" value="å·²æ·»åŠ " title="å•å‡»å‰å¾€ç»ƒä¹ " >');
 	}
 
     }
@@ -131,8 +130,8 @@ function saveWord(id){
 		  res.innerHTML = d;
 		  btn =  document.getElementById('interactive');
 		  if(btn){
-		      btn.setAttribute("value", "ÒÑÌí¼Ó");
-		      btn.setAttribute("title", "µ¥»÷Ç°ÍùÁ·Ï°");
+		      btn.setAttribute("value", "å·²æ·»åŠ ");
+		      btn.setAttribute("title", "å•å‡»å‰å¾€ç»ƒä¹ ");
 		      btn.setAttribute("onclick",'goURL("'+url+'")');
 		      //btn.onclick = function(){
 		      //  goURL(url);
