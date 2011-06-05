@@ -1,9 +1,12 @@
 <html><head>
         <meta name="generator" content="HTML Tidy, see www.w3.org">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>17bdc plugin</title>
     </head>
 	<link href="/css/main.css" rel="stylesheet" type="text/css">
-	<script type="text/javascript" src="query.js"> </script>
+	<script type="text/javascript" src="json.js"> </script>
+	<script type="text/javascript" src="base.js"> </script>
+
     <body onload="checkLogin();">
 	
 	<table id="maintable" cellpadding="1" width="230px" align="center"> 	
@@ -12,8 +15,8 @@
 		<div id="ubar"></div>
 		</td></tr> 		
 		<tr><td> 
-		<input type="text" name="word" id="word" style="width:160px;  " class="smallInput" onkeydown="if(event.keyCode==13)mainQuery(document.getElementsByName(&quot;word&quot;)[0].value,writeToFrame);">
-		<input type="button" onclick="mainQuery(document.getElementsByName(&quot;word&quot;)[0].value,writeToFrame);" value="查词">
+		<input type="text" name="word" id="word" style="width:160px;  " class="smallInput" onkeydown="if(event.keyCode==13)query(document.getElementsByName(&quot;word&quot;)[0].value);">
+		<input type="button" onclick="query(document.getElementsByName(&quot;word&quot;)[0].value);" value="查词">
 		</td></tr>
 		<tr><td> 
 		
