@@ -21,7 +21,7 @@ function checkLogin(){
 			username = cookie.value;
 			logged=true;
 			loadJS('jsonquery.js');
-			data='<span class="username"><a href="#" onclick="goURL(&quot;http://shanbay.com/user/list/'+userid+'/&quot;)">'+username+'</a></span>';
+			data='<span class="username"><a href="#" onclick="goURL(&quot;'+host+'/user/list/'+username+'/&quot;)">'+username+'</a></span>';
 			var res = document.getElementById('ubar');
 			res.innerHTML = data;
 		    }
@@ -30,7 +30,7 @@ function checkLogin(){
 	}else{
 	    logged = false;
 	    loadJS('query.js');
-	    data='<span class="username"><a href="#" onclick="goURL(&quot;http://shanbay.com/accounts/login/&quot;)">登录</a></span>';
+	    data='<span class="username"><a href="#" onclick="goURL(&quot;'+host+'/accounts/login/&quot;)">登录</a></span>';
 	    var res = document.getElementById('ubar');
 	    res.innerHTML = data;
 	    
