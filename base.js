@@ -1,8 +1,10 @@
+var version="0.2.2";
 var logged;
+var host="http://www.shanbay.com";
 function checkLogin(){
     chrome.cookies.get(
     {
-        "url" : "http://shanbay.com",
+        "url" : host,
         "name" : "userid"
     }, 
     function(cookie){
@@ -10,7 +12,7 @@ function checkLogin(){
 	    userid = cookie.value;
 	    chrome.cookies.get(
 		{
-		    "url" : "http://shanbay.com",
+		    "url" : host,
 		    "name" : "username"
 		}, 
 		function(cookie)
@@ -36,24 +38,25 @@ function checkLogin(){
     }
     );
     document.getElementById('word').focus();
-	
-	/*var req = new XMLHttpRequest();
+    setTimeout(checkUpdate,500);
+}
+function checkUpdate(){
+    var req = new XMLHttpRequest();
 	req.onreadystatechange = function(data) {
           if (req.readyState == 4) {
             if (req.status == 200) {
-				var data = req.responseText;
-				re = /(<span class="username">)(.*?)<\/span>/gi
-				var arrdata = data.match(re);
-					alert(arrdata.length);
-				for(var i = 0 ; i < arrdata.length; i++){
-					alert(arrdata[i]);
-				}
+		var data = req.responseText;
+		if(data[0]=='1'){
+		    document.getElementById('feedback').innerHTML= '&nbsp;<a style="color: red;" href="#" onclick="goURL(&quot;http://code.google.com/p/shanbay-chrome-extension/&quot;);">新版本new!</a>';
+		}else if(data[0]=='3'){
+		    document.getElementById('foot').innerHTML=data.slice(1);
+		}
             }
           }
         }
-	var url = 'http://shanbay.com';
+	var url = 'http://toys.dourok.info/sbce.php?version='+version;
 	req.open('GET', url , true);
-	req.send(null);*/
+	req.send(null);
 }
 
 function goURL(url){
@@ -85,7 +88,7 @@ function loadJS(jsfile )
     var oScript= document.createElement("script"); 
     oScript.type = "text/javascript";
     oScript.src=jsfile; 
-    oHead.appendChild( oScript); 
+    oHead.appendChild(oScript); 
 
 } 
 
