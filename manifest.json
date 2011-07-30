@@ -1,6 +1,6 @@
 { 
    "name": "扇贝网查词助手", 
-   "version": "0.2.4.0", 
+   "version": "0.2.4.1", 
    "description": "扇贝网查词Chrome扩展，查词更方便。", 
    "icons": { "16": "icon.png",  "48": "icon.png", "128": "icon.png" },
    "permissions": [

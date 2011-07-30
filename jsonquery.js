@@ -11,9 +11,9 @@ voc:词汇实例
 
 */
 
-var  QUERY_API='http://shanbay.com/api/word/{{word}}';
-var ADD_WORD_API='http://shanbay.com/api/learning/add/{{word}}';
-var ADD_EXAMPLE_API = 'http://shanbay.com/api/example/add/{{learning_id}}?sentence={{sentence}}&translation={{translation}}';
+var  QUERY_API=host+'/api/word/{{word}}';
+var ADD_WORD_API=host+'/api/learning/add/{{word}}';
+var ADD_EXAMPLE_API = host+'/api/example/add/{{learning_id}}?sentence={{sentence}}&translation={{translation}}';
 
 var gWord;
 
