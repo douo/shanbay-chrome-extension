@@ -7,19 +7,24 @@
 	};
 	var notification = webkitNotifications.createHTMLNotification("popup.html");
 	notification.ondisplay = function(){
-		function callback(){
-			var win = chrome.extension.getViews({type:"notification"})[0];
-			console.log(info.selectionText);
-			win.query(info.selectionText);
-			var toHide = ["logo", "word", "search"];
-			for(var i = 0; i< toHide.length ; i ++){
-				var id = toHide[i];
-				var elem = win.document.getElementById(id);
-				//console.log(id);
-				elem.setAttribute("style", "display:none");
+		console.log("notification displayed!");
+		var win = null;
+		waitAndQuery();
+		function waitAndQuery(){
+			if(win = chrome.extension.getViews({type:"notification"})[0]){
+				console.log(info.selectionText);
+				win.query(info.selectionText);
+				var toHide = ["logo", "word", "search"];
+				for(var i = 0; i< toHide.length ; i ++){
+					var id = toHide[i];
+					var elem = win.document.getElementById(id);
+					//console.log(id);
+					elem.setAttribute("style", "display:none");
+				}
+			}else{
+				setTimeout(waitAndQuery, 200);
 			}
-		};
-		setTimeout(callback, 500);
+		}
 	};
 	notification.show();
 	//console.log("Item was clicked");
@@ -29,5 +34,5 @@ var id = chrome.contextMenus.create({
     	"onclick" : onClick,
     	"contexts" : ["selection"]
 }, function(){
-	//console.log("Menu created");
+	console.log("Menu created");
 });
