@@ -38,7 +38,7 @@ function checkLogin(){
     }
     );
     document.getElementById('word').focus();
-    setTimeout(checkUpdate,500);
+    //setTimeout(checkUpdate,500);
 }
 function checkUpdate(){
     var req = new XMLHttpRequest();

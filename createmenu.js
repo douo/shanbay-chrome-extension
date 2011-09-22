@@ -6,7 +6,7 @@
 		existing.close();
 	};
 	var notification = webkitNotifications.createHTMLNotification("popup.html");
-	notification.ondisplay = function(){
+	notification.addEventListener("display", function(){
 		console.log("notification displayed!");
 		var win = null;
 		waitAndQuery();
@@ -25,8 +25,9 @@
 				setTimeout(waitAndQuery, 200);
 			}
 		}
-	};
+	});
 	notification.show();
+	console.log(notification);
 	//console.log("Item was clicked");
 }
 var id = chrome.contextMenus.create({
