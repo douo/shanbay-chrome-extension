@@ -82,6 +82,7 @@ function initResultDiv() {
   resultDiv.style.display = "none";
   resultDiv.style.backgroundColor = "yellow";
   resultDiv.style.color = "black";
+  resultDiv.style.zIndex = "100";
   document.body.appendChild(resultDiv);
 }
 
