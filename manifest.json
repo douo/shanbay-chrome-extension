@@ -1,15 +1,22 @@
 { 
    "name": "扇贝网查词助手", 
-   "version": "0.2.4.1", 
+   "version": "0.3.0.0", 
    "description": "扇贝网查词Chrome扩展，查词更方便。", 
    "icons": { "16": "icon.png",  "48": "icon.png", "128": "icon.png" },
    "permissions": [
    "cookies", "contextMenus", "notifications",
-    "http://*.shanbay.com/*" , "http://media.17bdc.com/*"
+    "http://*.shanbay.com/*" , "http://media.17bdc.com/*", "http://translate.google.com/"
   ],
    "browser_action": { 
       "default_icon": "icon.png", 
       "popup": "popup.html"
    },
-   "background_page" : "background.html"
+   "background_page" : "background.html",
+   "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["select.js"],
+      "all_frames": true
+    }
+  ]
 }
