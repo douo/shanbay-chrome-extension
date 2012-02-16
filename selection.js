@@ -1,3 +1,15 @@
+/*
+ * selection.js
+ * 2012-2-16
+ * 
+ * 用于在网页中选择文本时弹出翻译或相关内容。
+ * 需求所有网页权限。
+ * 
+ * ----ChangeLog----
+ * 2012-2-16 MalFurion.StormRage@gmail.com
+ * 实现Google Translate
+ */
+
 function $(id) {
   return document.getElementById(id);
 }
