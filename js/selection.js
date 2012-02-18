@@ -1,37 +1,73 @@
 /*
  * selection.js
- * 2012-2-16
+ * 2012-2-18
  * 
  * 用于在网页中选择文本时弹出翻译或相关内容。
  * 需求所有网页权限。
  * 
  * ----ChangeLog----
+ * 2012-2-18 MalFurion.StormRage@gmail.com
+ * 使用jQuery重写
+ * 使用全局的ShanbayChromeExtension对象避免命名空间污染
+ * 
  * 2012-2-16 MalFurion.StormRage@gmail.com
  * 实现Google Translate
  */
 
-function $(id) {
-  return document.getElementById(id);
+var ShanbayChromeExtension = {}
+
+ShanbayChromeExtension.resultDivClass = "shanbay_extension_result_div";
+ShanbayChromeExtension.resultDivSelector = ".shanbay_extension_result_div";
+
+// 初始化展示结果用的层
+ShanbayChromeExtension.initResultDiv = function() {
+  resultDiv = document.createElement("div");
+  resultDiv.className = this.resultDivClass;
+  $("body").append(resultDiv);
+
+  $(this.resultDivSelector).css({
+    position : "absolute",
+    display : "none",
+    "background-color" : "yellow",
+    color : "black",
+    "z-index" : "100"
+  });
+}
+
+// 获取选中的文本，如果无效，返回空
+ShanbayChromeExtension.lastQuery = null;
+ShanbayChromeExtension.getValidSelection = function() {
+  // trim
+  var text = String(window.getSelection()).replace(/(^\s*)|(\s*$)/g, "");
+
+  // same word?
+  if (this.lastQuery == text) {
+    txt = "";
+  } else {
+    this.lastQuery = text;
+  }
+
+  return text;
 }
 
 // XHR查询翻译并将结果写入$(divid)中
-function queryAndPutText(word, divid) {
+ShanbayChromeExtension.queryAndShow = function(text) {
   var req = new XMLHttpRequest();
   var url = "http://translate.google.com/translate_a/t?"
       + "client=t&hl=zh-CN&sl=auto&tl=zh-CN&"
-      + "multires=1&otf=1&ssel=0&tsel=0&sc=1&" + "text=" + word;
-  req.onreadystatechange = function() {
-    if (req.readyState == 4 && req.status == 200) {
-      putResult(divid, eval(req.responseText));
-    }
-  }
-  req.open("GET", url, true);
-  req.send(null);
+      + "multires=1&otf=1&ssel=0&tsel=0&sc=1&" + "text=" + text;
+
+  // getJSON doesn't work, cause data is not a standard JSON string
+  $.get(url, function(data) {
+    // parseJSON doesn't work
+    ShanbayChromeExtension.putResult(eval(data));
+  });
 }
 
 // 将google translate翻译结果写入$(divid)中
-function putResult(divid, result) {
+ShanbayChromeExtension.putResult = function(result) {
   var summary = "";
+  var i;
 
   if (!result[1]) {
     // 整句翻译
@@ -50,54 +86,28 @@ function putResult(divid, result) {
     summary += "</table>";
   }
 
-  $(divid).innerHTML = summary;
+  $(this.resultDivSelector).html(summary);
 }
 
 // 监听鼠标释放事件
-function onSelect(event) {
+ShanbayChromeExtension.onSelect = function(event) {
   if (event.button != 0)
     return;
-  if (!resultDiv)
-    initResultDiv();
 
-  var txt = getValidSelection();
+  var txt = this.getValidSelection();
   if (!txt) {
-    resultDiv.style.display = "none";
-    return;
+    return $(this.resultDivSelector).fadeOut();
   }
-
-  resultDiv.innerHTML = "正在获取...";
-  resultDiv.style.left = event.clientX + document.body.scrollLeft + "px";
-  resultDiv.style.top = event.clientY + document.body.scrollTop + 10 + "px";
-  resultDiv.style.display = "block";
-  queryAndPutText(txt, resultDiv.id);
+  $(this.resultDivSelector).html("正在获取...").css({
+    left : event.pageX + "px",
+    top : event.pageY + 10 + "px"
+  }).fadeIn();
+  this.queryAndShow(txt, resultDiv.id);
 }
 
-// 获取选中的文本，如果无效，返回空
-function getValidSelection() {
-  var txt = String(window.getSelection()).replace(/(^\s*)|(\s*$)/g, "");
-
-  if (tmpText && tmpText == txt) {
-    txt = "";
-  } else {
-    tmpText = txt;
-  }
-
-  return txt;
-}
-
-// 初始化展示结果用的层
-function initResultDiv() {
-  resultDiv = document.createElement("div");
-  resultDiv.id = "resultDiv";
-  resultDiv.style.position = "absolute";
-  resultDiv.style.display = "none";
-  resultDiv.style.backgroundColor = "yellow";
-  resultDiv.style.color = "black";
-  resultDiv.style.zIndex = "100";
-  document.body.appendChild(resultDiv);
-}
-
-var tmpText = null;
-var resultDiv = null;
-window.addEventListener("mouseup", onSelect);
+$("body").ready(function() {
+  ShanbayChromeExtension.initResultDiv();
+  $("body").mouseup(function(event) {
+    ShanbayChromeExtension.onSelect(event);
+  });
+});
