@@ -6,6 +6,14 @@
  * 需求所有网页权限。
  * 
  * ----ChangeLog----
+ * TODO：
+ * 维基百科
+ * 窗口阴影（外观）
+ * 自动添加（选项）
+ * 
+ * 2012-2-19 MalFurion.StormRage@gmail.com
+ * 加入维基百科引擎，抓取结果的第一段文本和第一张图片(如果有)
+ * 
  * 2012-2-19 MalFurion.StormRage@gmail.com
  * 加入扇贝查词引擎，并实现添加生词
  * 
@@ -57,28 +65,27 @@ ShanbayChromeExtension._engineMeta = [
 
         if (result.learning_id == 0) {
           this.result = result;
-          
+
           // 添加单词链接的事件监听器
-          var id = this._addHandler("add", "click", "funcAdd");
+          var id = this.$addHandler("add");
           caption += "<a href=\"#\" id=\"" + id + "\">[添加]</a>";
         } else {
           caption += "(已添加)";
         }
 
-        var content = "<table><tr><td><pre>" + result.voc.definition
-            + "</pre></td></tr></table>"
+        var content = result.voc.definition.replace("\n", "<br/>")
 
         return new Array(caption, content);
       },
-      funcAdd : function() { // 添加单词
+      add : function() { // 添加单词
         var url = "http://www.shanbay.com/api/learning/add/"
             + this.result.voc.content;
         var thisEngine = this;
         $.getJSON(url, function(data) {
           if (data.id == 0) {
-            $(thisEngine._captionDivSelector).append("&nbsp;(添加失败，请重试)");
+            $(thisEngine.$captionDivSelector).append("&nbsp;(添加失败，请重试)");
           } else {
-            $(thisEngine._captionDivSelector).html(
+            $(thisEngine.$captionDivSelector).html(
                 thisEngine.tmpCaption + "(添加成功)");
           }
         });
@@ -97,7 +104,7 @@ ShanbayChromeExtension._engineMeta = [
       parser : function(data) {
         var result = eval(data); // parseJSON doesn't work
 
-        var caption = "<a href=\"http://translate.google.com\" target=\"_blank\" style=\"color:white\">谷歌翻译</a>";
+        var caption = "谷歌翻译<a href=\"http://translate.google.com\" target=\"_blank\">[打开]</a>";
         var content = "";
         var i;
 
@@ -119,6 +126,43 @@ ShanbayChromeExtension._engineMeta = [
         }
 
         return new Array(caption, content);
+      }
+    },
+    {
+      name : "维基百科",
+      url : "http://zh.wikipedia.org/wiki/{{text}}",
+      type : "html",
+      filter : function(text) {
+        if (text.length > 30) {
+          return false;
+        }
+        return true;
+      },
+      parser : function(data) {
+        var caption = "维基百科<a href=\"http://zh.wikipedia.org/wiki/"
+            + this.$text
+            + "\" target=\"_blank\" style=\"color:white\">[查看详情]</a>";
+
+        var left = $(data).find(".mw-content-ltr:first").children("p:first")
+            .text().replace(/\[[^\]]+\]/, "");
+        var right = $(data).find(".infobox").find("td:first").find("a:first")
+            .html();
+        if (!right)
+          right = "";
+        var content = "<table><tr><td>" + left + "</td><td>" + right
+            + "</td></tr></table>";
+
+        return new Array(caption, content);
+      },
+      error : function(status) {
+        if (status == 404) {
+          var caption = "维基百科<a href=\"http://zh.wikipedia.org/wiki/"
+              + this.$text
+              + "\" target=\"_blank\" style=\"color:white\">[前往编辑条目]</a>";
+          return [ caption, "暂时没有这个条目" ];
+        } else {
+          return this.$defaultError();
+        }
       }
     } ];
 
@@ -145,10 +189,10 @@ ShanbayChromeExtension._engines = new Array();
 // 引擎类
 ShanbayChromeExtension._Engine = function(id, meta) {
   // id: 在ShanbayChromeExtension._engines中的索引
-  // meta: {name, url, parser} at least
+  // meta: see ShanbayChromeExtension._engineMeta
   var attr;
   for (attr in meta) {
-    this[attr] = meta[attr]
+    this[attr] = meta[attr];
   }
 
   // 标题和内容的选择器
@@ -159,14 +203,36 @@ ShanbayChromeExtension._Engine = function(id, meta) {
 
   prefix = "#" + prefix;
   this._engineDivSelector = prefix;
-  this._captionDivSelector = prefix + "_caption";
-  this._contentDivSelector = prefix + "_content";
+  this.$captionDivSelector = this._captionDivSelector = prefix + "_caption";
+  this.$contentDivSelector = this._contentDivSelector = prefix + "_content";
 
   // 返回的内容需要绑定一些事件，如添加单词的点击事件
   this._handlers = {};
+  // 查询的文本
+  this.$text = null;
 
   if (typeof ShanbayChromeExtension._Engine._initialized == "undefined") {
     ShanbayChromeExtension._Engine._initialized = true;
+
+    // error handler
+    ShanbayChromeExtension._Engine.prototype._onError = function(xhr, type,
+        cause) {
+      this._xhr = xhr;
+      this._errorType = type;
+      this._errorCause = cause;
+
+      if (typeof this.error == "undefined") {
+        this._showResult(this.$defaultError());
+      } else {
+        this._showResult(this.error(xhr.status, cause));
+      }
+    }
+
+    // default error message
+    ShanbayChromeExtension._Engine.prototype.$defaultError = function() {
+      return [ this.name,
+          this._errorType + ": " + this._xhr.status + " " + this._errorCause ];
+    }
 
     // 引擎的主要方法，查询并展示结果
     ShanbayChromeExtension._Engine.prototype._queryAndShow = function(text) {
@@ -175,35 +241,43 @@ ShanbayChromeExtension._Engine = function(id, meta) {
       }
 
       $(this._engineDivSelector).show();
+      $(this._captionDivSelector).html(
+          this.name + "&nbsp;<span class=\"tip\">载入中...</span>");
       $(this._contentDivSelector).hide();
       var url = this.url.replace("{{text}}", text);
+      this.$text = text;
+
       var thisEngine = this; // hack "this" pointer
-      $.get(url, null, function(data) {
-        thisEngine._showResult(data);
+      $.get(url, null, null, this.type).success(function(data) {
+        thisEngine._parseAndShow(data);
         thisEngine._bindHandler();
-      }, this.type);
+      }).error(function(xhr, type, cause) {
+        thisEngine._onError(xhr, type, cause);
+      });
     }
 
     // 转换查询结果并展示在自己的div中
-    ShanbayChromeExtension._Engine.prototype._showResult = function(data) {
-      var htmls = this.parser(data);
+    ShanbayChromeExtension._Engine.prototype._parseAndShow = function(data) {
+      this._showResult(this.parser(data));
+    }
+
+    ShanbayChromeExtension._Engine.prototype._showResult = function(htmls) {
       $(this._captionDivSelector).html(htmls[0]);
       $(this._contentDivSelector).html(htmls[1]).slideDown("slow");
     }
 
-    ShanbayChromeExtension._Engine.prototype._addHandler = function(idSuffix,
-        event, handler) {
-      var id = this._engineDivId + '_' + idSuffix;
-      this._handlers[id] = [ event, handler ];
+    ShanbayChromeExtension._Engine.prototype.$addHandler = function(handlerName) {
+      var id = this._engineDivId + '_' + handlerName;
+      this._handlers[id] = handlerName;
       return id;
     }
 
     ShanbayChromeExtension._Engine.prototype._bindHandler = function() {
-      var id, event, handler;
+      var id;
       var thisEngine = this;
-      for (id in this._handlers) { // event, handler
-        $("#" + id).bind(this._handlers[id][0], function() {
-          eval("thisEngine." + thisEngine._handlers[id][1] + "()");
+      for (id in this._handlers) {
+        $("#" + id).bind("click", function() {
+          eval("thisEngine." + thisEngine._handlers[id] + "()");
         });
       }
     }
@@ -279,7 +353,7 @@ ShanbayChromeExtension._initResultDiv = function() {
 // 获取选中的文本，如果无效，返回空
 ShanbayChromeExtension._getValidSelection = function() {
   // trim
-  var text = String(window.getSelection()).replace(/(^\s*)|(\s*$)/g, "");
+  var text = $.trim(String(window.getSelection()));
 
   // same word?
   if (this.lastQuery == text) {
