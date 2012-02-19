@@ -7,15 +7,11 @@
  * 
  * ----ChangeLog----
  * TODO：
- * 维基百科
- * 窗口阴影（外观）
  * 自动添加（选项）
  * 
  * 2012-2-19 MalFurion.StormRage@gmail.com
- * 加入维基百科引擎，抓取结果的第一段文本和第一张图片(如果有)
- * 
- * 2012-2-19 MalFurion.StormRage@gmail.com
  * 加入扇贝查词引擎，并实现添加生词
+ * 加入维基百科引擎，抓取结果的第一段文本和第一张图片(如果有)
  * 
  * 2012-2-18 MalFurion.StormRage@gmail.com
  * 使用jQuery重写
@@ -33,8 +29,24 @@ var ShanbayChromeExtension = {}
 // name: 引擎名
 // url: 请求地址，查询字符串使用占位符{{text}}
 // type: 返回类型，one of [html, xml, json]
-// filter:文本过滤器，返回false时不发送请求
-// parser: 结果转换器，必须返回数组[标题html, 正文html]
+// filter: 文本过滤器，返回false时不发送请求，参数：(text选中的文本)
+// parser: 结果转换器，请求成功返回时调用，必须返回数组[标题html, 正文html]，
+// 参数：(data请求返回的数据)，类型由type指定
+// 可选：
+// error: 请求发生错误时调用，必须返回数组[标题html, 正文html]，参数：(status错误码, desc错误描述)
+// 
+// 元数据定义的函数中均可使用this指针获取当前的元数据，如this.name可获得引擎名
+// this还额外提供了一些其他的属性：
+// this.$text 当前查询的文本
+// this.$captionDivSelector 标题div的选择器
+// this.$contentDivSelector 内容div的选择器
+// 
+// 可为展示的结果提供点击事件处理器函数以完成某些操作，使用方法：
+// var id = this.$addHandler(handlerName) //handlerName是元数据中提供的处理器函数名
+// 将任意元素设置为这个id即可在点击时调用处理器函数，如：<a id="{{id}}" href="#">link</a>
+// 处理器函数没有参数，可将一些数据放入this中，以便事件处理器函数使用。
+// 处理器函数可通过jQuery访问选择器更新标题和内容。
+// 参见扇贝词典中的实例。
 ShanbayChromeExtension._engineMeta = [
     {
       name : "扇贝词典",
@@ -53,13 +65,12 @@ ShanbayChromeExtension._engineMeta = [
       },
       parser : function(result) {
         if (typeof result.voc.id == "undefined") {
-          return new Array("扇贝词典", "词典中没有找到选择的内容");
+          return [ "扇贝词典", "词典中没有找到选择的内容" ];
         }
 
         var caption = result.voc.content;
         if (result.voc.pron)
           caption += "[" + result.voc.pron + "]";
-        caption += "&nbsp;";
 
         this.tmpCaption = caption;
 
@@ -70,12 +81,12 @@ ShanbayChromeExtension._engineMeta = [
           var id = this.$addHandler("add");
           caption += "<a href=\"#\" id=\"" + id + "\">[添加]</a>";
         } else {
-          caption += "(已添加)";
+          caption += "<span>已添加</span>";
         }
 
         var content = result.voc.definition.replace("\n", "<br/>")
 
-        return new Array(caption, content);
+        return [ caption, content ];
       },
       add : function() { // 添加单词
         var url = "http://www.shanbay.com/api/learning/add/"
@@ -83,10 +94,10 @@ ShanbayChromeExtension._engineMeta = [
         var thisEngine = this;
         $.getJSON(url, function(data) {
           if (data.id == 0) {
-            $(thisEngine.$captionDivSelector).append("&nbsp;(添加失败，请重试)");
+            $(thisEngine.$captionDivSelector).append("<span>添加失败，请重试</span>");
           } else {
             $(thisEngine.$captionDivSelector).html(
-                thisEngine.tmpCaption + "(添加成功)");
+                thisEngine.tmpCaption + "<span>添加成功</span>");
           }
         });
       }
@@ -96,7 +107,10 @@ ShanbayChromeExtension._engineMeta = [
       url : "http://translate.google.com/translate_a/t?client=t&text={{text}}&hl=en&sl=auto&tl=zh-CN&multires=1&otf=2&ssel=0&tsel=0&uptl=zh-CN&sc=1",
       type : "html",
       filter : function(text) {
-        if (text.length > 1000) {
+        if (text.length > 1000) { // 长度不超过1000且非中文 /^[\u4E00-\u9FA5]+$/
+          return false;
+        }
+        if (/^[\u4E00-\u9FA5]+$/.test(text)) {
           return false;
         }
         return true;
@@ -125,7 +139,7 @@ ShanbayChromeExtension._engineMeta = [
           content += "</table>";
         }
 
-        return new Array(caption, content);
+        return [ caption, content ];
       }
     },
     {
@@ -136,12 +150,14 @@ ShanbayChromeExtension._engineMeta = [
         if (text.length > 30) {
           return false;
         }
+        if (/\n/.test(text)) {
+          return false;
+        }
         return true;
       },
       parser : function(data) {
         var caption = "维基百科<a href=\"http://zh.wikipedia.org/wiki/"
-            + this.$text
-            + "\" target=\"_blank\" style=\"color:white\">[查看详情]</a>";
+            + this.$text + "\" target=\"_blank\">[查看详情]</a>";
 
         var left = $(data).find(".mw-content-ltr:first").children("p:first")
             .text().replace(/\[[^\]]+\]/, "");
@@ -152,15 +168,17 @@ ShanbayChromeExtension._engineMeta = [
         var content = "<table><tr><td>" + left + "</td><td>" + right
             + "</td></tr></table>";
 
-        return new Array(caption, content);
+        return [ caption, content ];
       },
       error : function(status) {
-        if (status == 404) {
+        switch (status) {
+        case 404:
           var caption = "维基百科<a href=\"http://zh.wikipedia.org/wiki/"
-              + this.$text
-              + "\" target=\"_blank\" style=\"color:white\">[前往编辑条目]</a>";
+              + this.$text + "\" target=\"_blank\">[前往编辑条目]</a>";
           return [ caption, "暂时没有这个条目" ];
-        } else {
+        case 400:
+          return [ "维基百科", "暂时没有这个条目" ];
+        default:
           return this.$defaultError();
         }
       }
@@ -176,9 +194,6 @@ ShanbayChromeExtension._contentDivClass = "shanbay_extension_result_content";
 ShanbayChromeExtension._resultDivId = "shanbay_extension_result";
 ShanbayChromeExtension._resultDivSelector = "#"
     + ShanbayChromeExtension._resultDivId;
-
-// 最后一次查询的词
-ShanbayChromeExtension._lastQuery = null;
 
 // 鼠标停留在结果上时不响应鼠标弹起事件
 ShanbayChromeExtension._isMouseOnDiv = false;
@@ -241,8 +256,7 @@ ShanbayChromeExtension._Engine = function(id, meta) {
       }
 
       $(this._engineDivSelector).show();
-      $(this._captionDivSelector).html(
-          this.name + "&nbsp;<span class=\"tip\">载入中...</span>");
+      $(this._captionDivSelector).html(this.name + "<span>载入中...</span>");
       $(this._contentDivSelector).hide();
       var url = this.url.replace("{{text}}", text);
       this.$text = text;
@@ -263,7 +277,11 @@ ShanbayChromeExtension._Engine = function(id, meta) {
 
     ShanbayChromeExtension._Engine.prototype._showResult = function(htmls) {
       $(this._captionDivSelector).html(htmls[0]);
-      $(this._contentDivSelector).html(htmls[1]).slideDown("slow");
+      content = htmls[1];
+      if (!/<table.*<\/table>/.test(content)) {
+        content = "<table><tr><td>" + content + "</td></tr></table>";
+      }
+      $(this._contentDivSelector).html(content).slideDown("slow");
     }
 
     ShanbayChromeExtension._Engine.prototype.$addHandler = function(handlerName) {
@@ -310,13 +328,6 @@ ShanbayChromeExtension._initResultDiv = function() {
     ShanbayChromeExtension._isMouseOnDiv = true;
   }).mouseout(function() {
     ShanbayChromeExtension._isMouseOnDiv = false;
-  }).css({
-    position : "absolute",
-    display : "none",
-    "z-index" : "100",
-    overflow : "hidden",
-    width : "500px",
-    border : "solid 1px #209E85",
   });
 
   // 引擎层
@@ -334,19 +345,13 @@ ShanbayChromeExtension._initResultDiv = function() {
     captionDiv.id = engine._captionDivId;
     captionDiv.className = this._captionDivClass;
     $(engine._engineDivSelector).append(captionDiv);
-    $(engine._captionDivSelector).css({
-      height : "20px",
-      "background-color" : "#209E85",
-      color : "white"
-    });
+    $(engine._captionDivSelector);
 
     contentDiv = document.createElement("div");
     contentDiv.id = engine._contentDivId;
     contentDiv.className = this._contentDivClass;
     $(engine._engineDivSelector).append(contentDiv);
-    $(engine._contentDivSelector).css({
-      "background-color" : "white"
-    });
+    $(engine._contentDivSelector);
   }
 }
 
@@ -378,10 +383,15 @@ ShanbayChromeExtension.onSelect = function(event) {
   if (!text) {
     return $(this._resultDivSelector).fadeOut();
   }
-  $(this._resultDivSelector).css({
-    left : event.pageX + "px",
-    top : event.pageY + 10 + "px"
-  }).fadeIn();
+
+  var x = event.pageX;
+  var ox = document.body.offsetWidth;
+  if (x > 500 && ox - x < 500) {
+    x -= 500;
+  }
+
+  $(this._resultDivSelector).css("left", x + "px").css("top",
+      event.pageY + 10 + "px").fadeIn();
 
   var i;
   for (i in this._engines) {
