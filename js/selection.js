@@ -12,6 +12,7 @@
  * 2012-2-19 MalFurion.StormRage@gmail.com
  * 加入扇贝查词引擎，并实现添加生词
  * 加入维基百科引擎，抓取结果的第一段文本和第一张图片(如果有)
+ * 为扇贝查词引擎加入登录判断
  * 
  * 2012-2-18 MalFurion.StormRage@gmail.com
  * 使用jQuery重写
@@ -46,7 +47,9 @@ var ShanbayChromeExtension = {}
 // 将任意元素设置为这个id即可在点击时调用处理器函数，如：<a id="{{id}}" href="#">link</a>
 // 处理器函数没有参数，可将一些数据放入this中，以便事件处理器函数使用。
 // 处理器函数可通过jQuery访问选择器更新标题和内容。
-// 参见扇贝词典中的实例。
+// 参见扇贝词典中的处理器add实例。
+// 
+// this.$defaultError()方法用于返回默认的标题内容，可用于error的default分支中。
 ShanbayChromeExtension._engineMeta = [
     {
       name : "扇贝词典",
@@ -79,7 +82,7 @@ ShanbayChromeExtension._engineMeta = [
 
           // 添加单词链接的事件监听器
           var id = this.$addHandler("add");
-          caption += "<a href=\"#\" id=\"" + id + "\">[添加]</a>";
+          caption += "<a id=\"" + id + "\">[添加]</a>";
         } else {
           caption += "<span>已添加</span>";
         }
@@ -87,6 +90,16 @@ ShanbayChromeExtension._engineMeta = [
         var content = result.voc.definition.replace("\n", "<br/>")
 
         return [ caption, content ];
+      },
+      error : function(status) {
+        switch (status) {
+        case 200:
+          return [
+              "扇贝词典<a href=\"http://www.shanbay.com/accounts/login\" "
+                  + "target=\"_blank\">[登录]<a>", "登录后才能查询" ];
+        default:
+          return this.$defaultError();
+        }
       },
       add : function() { // 添加单词
         var url = "http://www.shanbay.com/api/learning/add/"
@@ -159,10 +172,17 @@ ShanbayChromeExtension._engineMeta = [
         var caption = "维基百科<a href=\"http://zh.wikipedia.org/wiki/"
             + this.$text + "\" target=\"_blank\">[查看详情]</a>";
 
-        var left = $(data).find(".mw-content-ltr:first").children("p:first")
-            .text().replace(/\[[^\]]+\]/, "");
-        var right = $(data).find(".infobox").find("td:first").find("a:first")
-            .html();
+        var left, right = null;
+        if ($(data).find("#disambigbox").length != 0) { // 消歧义页
+          left = $(data).find(".mw-content-ltr:first").children("ul:first")
+              .html().replace(/<a[^>]*>|<\/a>/g, "");
+        } else {
+          var left = $(data).find(".mw-content-ltr:first").children("p:first")
+              .text().replace(/\[[^\]]+\]/, "");
+          var right = $(data).find(".infobox").find("td:first").find("a:first")
+              .html();
+        }
+
         if (!right)
           right = "";
         var content = "<table><tr><td>" + left + "</td><td>" + right

@@ -4,12 +4,13 @@
 	z-index: 100;
 	width: 500px;
 	overflow: hidden;
-	border: solid 1px #209E85;
 	font-family: Times, Georgia, serif;
 	font-size: 14px;
+	color: black;
 	text-align: left;
 	vertical-align: middle;
 	background-color: white;
+	border: solid 1px #209E85;
 	box-shadow: 2px 2px 10px #209E85;
 }
 
@@ -38,9 +39,14 @@
 	color: #0645AD;
 	font-size: 12px;
 	text-shadow: none;
+	cursor: pointer;
 }
 
 .shanbay_extension_result_content {
 	font-size: 14px;
 	padding: 6px;
+}
+
+.shanbay_extension_result_content *{
+	margin: 0px;
 }
