@@ -8,7 +8,7 @@
     "http://*.shanbay.com/*" , "http://media.17bdc.com/*", "http://translate.google.com/"
   ],
    "browser_action": { 
-      "default_icon": "icon.png", 
+      "default_icon": "icon.png",
       "popup": "popup.html"
    },
    "background_page" : "background.html",
@@ -16,6 +16,7 @@
     {
       "matches": ["<all_urls>"],
       "js": ["js/jquery-1.7.1.min.js", "js/selection.js"],
+      "css": ["css/selection.css"],
       "all_frames": true
     }
   ]

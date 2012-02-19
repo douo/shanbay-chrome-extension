@@ -1,0 +1,46 @@
+.shanbay_extension_result {
+	position: absolute;
+	display: none;
+	z-index: 100;
+	width: 500px;
+	overflow: hidden;
+	border: solid 1px #209E85;
+	font-family: Times, Georgia, serif;
+	font-size: 14px;
+	text-align: left;
+	vertical-align: middle;
+	background-color: white;
+	box-shadow: 2px 2px 10px #209E85;
+}
+
+.shanbay_extension_result_engine {
+	
+}
+
+.shanbay_extension_result_caption {
+	height: 16px;
+	background: -webkit-gradient(linear, left center, right top, from(#209E85),
+		to(#FFF) );
+	color: white;
+	font-size: 14px;
+	text-shadow: -2px 0 3px #006;
+	padding-left: 3px;
+}
+
+.shanbay_extension_result_caption span {
+	font-size: 12px;
+	text-shadow: none;
+}
+
+.shanbay_extension_result_caption a,.shanbay_extension_result_caption a:link,.shanbay_extension_result_caption a:visited,.shanbay_extension_result_caption a:hover,.shanbay_extension_result_caption a:active
+	{
+	text-decoration: none;
+	color: #0645AD;
+	font-size: 12px;
+	text-shadow: none;
+}
+
+.shanbay_extension_result_content {
+	font-size: 14px;
+	padding: 6px;
+}
