@@ -52,6 +52,7 @@
 .shanbay_extension_result_content {
 	font-size: 14px;
 	padding: 6px;
+	overflow: hidden;
 }
 
 .shanbay_extension_result_content * {
