@@ -1,7 +1,7 @@
 .shanbay_extension_result {
 	position: absolute;
 	display: none;
-	z-index: 100;
+	z-index: 2147483647;
 	width: 500px;
 	overflow: hidden;
 	font-family: Times, Georgia, serif;
@@ -28,6 +28,13 @@
 	padding-left: 3px;
 }
 
+.shanbay_extension_result_caption t6 {
+	color: white;
+	font-size: 14px;
+	text-shadow: -2px 0 3px #006;
+	padding-left: 3px;
+}
+
 .shanbay_extension_result_caption span {
 	font-size: 12px;
 	text-shadow: none;
@@ -47,6 +54,7 @@
 	padding: 6px;
 }
 
-.shanbay_extension_result_content *{
+.shanbay_extension_result_content * {
 	margin: 0px;
+	border: 0px;
 }
