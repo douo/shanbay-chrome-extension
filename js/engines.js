@@ -115,7 +115,8 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
               return false;
             }
             for ( var i = 0; i < text.length; i++) {
-              if (text.charCodeAt(i) > 128 || text.charCodeAt(i) < 40) {
+              var charCode = text.charCodeAt(i);
+              if (charCode > 128 || charCode == 10) { //10: "\n"
                 return false;
               }
             }
@@ -208,15 +209,18 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
 
             this.audioId = this.$generateId("audio");
             var caption = this.$$generateTitle("谷歌翻译").add(
-                $("<audio/>").prop(
-                    {
-                      id : this.audioId,
-                      src : this.urlAudio.replace("{{text}}", this.$text)
-                          .replace("{{lang}}", result[2]),
-                    //autoplay : "autoplay"
-                    })).add(
-                this.$$generateClickableLink("发音", "play").add(
-                    this.$$generateLink("打开", this.urlHome)));
+                //audio标签的跨域访问问题无法解决，使用替代方案：打开发音链接
+                //                $("<audio/>").prop(
+                //                    {
+                //                      id : this.audioId,
+                //                      src : this.urlAudio.replace("{{text}}", this.$text)
+                //                          .replace("{{lang}}", result[2]),
+                //                    //autoplay : "autoplay"
+                //                    })).add(
+                //                this.$$generateClickableLink("发音", "play").add(
+                this.$$generateLink("发音", this.urlAudio.replace("{{text}}",
+                    this.$text).replace("{{lang}}", result[2]))).add(
+                this.$$generateLink("打开", this.urlHome));
 
             var content = "";
             var i;
@@ -241,9 +245,9 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
             return [ caption, content ];
           },
           play : function() {
-            $("#" + this.audioId).prop("src", function(i, val) {
-              return val;
-            }).prop("autoplay", "autoplay");
+            //audio标签的跨域访问问题无法解决，使用替代方案：打开发音链接
+            //此函数闲置
+            $("#" + this.audioId)[0].load();
           }
         },
         {
@@ -322,7 +326,8 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
               return false;
             }
             for ( var i = 0; i < text.length; i++) {
-              if (text.charCodeAt(i) > 128 || text.charCodeAt(i) < 40) {
+              var charCode = text.charCodeAt(i);
+              if (charCode > 128 || charCode == 10) { //10: "\n"
                 return false;
               }
             }
