@@ -53,8 +53,8 @@ ShanbayChromeExtension._isMouseOnDiv = false;
 ShanbayChromeExtension._engines = new Array();
 
 //引擎类
-ShanbayChromeExtension._Engine = function(id, meta) {
-  //id: 在ShanbayChromeExtension._engines中的索引
+ShanbayChromeExtension._Engine = function(index, meta) {
+  //index: 在ShanbayChromeExtension._engines中的索引
   //meta: see ShanbayChromeExtension._engineMeta
   var attr;
   for (attr in meta) {
@@ -62,7 +62,7 @@ ShanbayChromeExtension._Engine = function(id, meta) {
   }
 
   //标题和内容的选择器
-  var prefix = ShanbayChromeExtension._resultDivId + "_" + this.name;
+  var prefix = ShanbayChromeExtension._resultDivId + "_" + this.id;
   this._engineDivId = prefix;
   this._captionDivId = prefix + "_caption";
   this._contentDivId = prefix + "_content";
@@ -91,18 +91,20 @@ ShanbayChromeExtension._Engine = function(id, meta) {
       cause) {
     return [ this.name, type + ": " + xhr.status + " " + cause ];
   }
-  
-  ShanbayChromeExtension._Engine.prototype._validateText = function(text) {
-    if (this.enabled === false || this.filter(text) === false) {
+
+  ShanbayChromeExtension._Engine.prototype._validateText = function(text,
+      options) {
+    var option = options[this.id];
+    if ((option && option.enabled === false) || this.enabled === false
+        || this.filter(text) === false) {
       $(this._engineDivSelector).hide();
       return false;
     }
     return true;
   }
-  
+
   //引擎的主要方法，查询并展示结果
   ShanbayChromeExtension._Engine.prototype._queryAndShow = function(text) {
-    
 
     $(this._engineDivSelector).show();
     $(this._captionDivSelector).html(this.name + "<span>载入中...</span>");
@@ -284,17 +286,32 @@ ShanbayChromeExtension.onSelect = function(event) {
     x -= 500;
   }
 
+  $(this._resultDivSelector).css("left", x + "px").css("top",
+      event.pageY + 10 + "px");
+
+  thisObj = this;
+  chrome.extension.sendRequest({
+    action : "getOptions"
+  }, function(response) {
+    console.log(JSON.stringify(response));
+    thisObj.queryAndShow(text, response);
+  });
+}
+
+ShanbayChromeExtension.queryAndShow = function(text, options) {
+  if (options.global.enabled === false)
+    return;
+
   var i, flag = false;
   for (i in this._engines) {
-    if (this._engines[i]._validateText(text)) {
+    if (this._engines[i]._validateText(text, options)) {
       flag = true;
       this._engines[i]._queryAndShow(text);
     }
   }
-  
+
   if (flag === true) {
-    $(this._resultDivSelector).css("left", x + "px").css("top",
-        event.pageY + 10 + "px").fadeIn();
+    $(this._resultDivSelector).fadeIn();
   }
 }
 
