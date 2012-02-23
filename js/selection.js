@@ -7,7 +7,11 @@
  * 
  * ----ChangeLog----
  * TODO：
- * 自动添加（选项）
+ * 选项应该从引擎配置中读取
+ * 
+ * 2012-2-24 MalFurion.StormRage@gmail.com
+ * 加入选项，现在可以配置引擎
+ * 为扇贝词典加入自动添加功能的支持
  * 
  * 2012-2-21 MalFurion.StormRage@gmail.com
  * 加入英文维基引擎
@@ -95,6 +99,8 @@ ShanbayChromeExtension._Engine = function(index, meta) {
   ShanbayChromeExtension._Engine.prototype._validateText = function(text,
       options) {
     var option = options[this.id];
+    this.$option = option;
+    
     if ((option && option.enabled === false) || this.enabled === false
         || this.filter(text) === false) {
       $(this._engineDivSelector).hide();

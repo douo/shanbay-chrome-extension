@@ -33,7 +33,8 @@
  *    *注意* 不要使用 $ 或 _(下划线) 开头的属性名。
  *    
  *  * 访问当前上下文数据
- *    使用this.$text可访问选中的文本。
+ *    this.$text: 选中的文本
+ *    this.$option: 选项
  *    
  *  * 使用辅助函数
  *    this.$defaultError(xhr, type, cause) -> [String, String]
@@ -133,9 +134,15 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
 
             if (result.learning_id == 0) {
               this.result = result;
-              //添加单词链接的事件监听器
-              caption = $().add(caption).add(
-                  this.$$generateClickableLink("添加", "add"));
+
+              if (this.$option.autoadd) { //自动添加
+                caption = this.add()[0];
+              
+              } else {
+                //添加单词链接的事件监听器
+                caption = $().add(caption).add(
+                    this.$$generateClickableLink("添加", "add"));
+              }
             } else {
               caption = $().add(caption).add(this.$$generateTip("已添加"));
             }
