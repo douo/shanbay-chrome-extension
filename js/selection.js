@@ -12,6 +12,7 @@
  * 2012-2-24 MalFurion.StormRage@gmail.com
  * 加入选项，现在可以配置引擎
  * 为扇贝词典加入自动添加功能的支持
+ * 当焦点在密码框中时不启用搜索
  * 
  * 2012-2-21 MalFurion.StormRage@gmail.com
  * 加入英文维基引擎
@@ -100,7 +101,7 @@ ShanbayChromeExtension._Engine = function(index, meta) {
       options) {
     var option = options[this.id];
     this.$option = option;
-    
+
     if ((option && option.enabled === false) || this.enabled === false
         || this.filter(text) === false) {
       $(this._engineDivSelector).hide();
@@ -278,6 +279,10 @@ ShanbayChromeExtension.onSelect = function(event) {
     return;
 
   if (this._isMouseOnDiv == true) {
+    return;
+  }
+
+  if (document.activeElement.type === "password") {
     return;
   }
 
