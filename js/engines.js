@@ -3,7 +3,8 @@
  * 
  * 1. 定义引擎需要提供的属性
  * 
- * name: String, 引擎名
+ * id: String, 引擎的唯一标识，将作为div的id使用，必须是有效的DOM id
+ * name: String, 引擎名，加载时标题栏将显示引擎名
  * enabled: boolean, 启用开关
  * url: String, 请求地址，查询字符串使用占位符{{text}}
  * type: String, 请求返回类型，one of [html, xml, json]
@@ -104,6 +105,7 @@
 ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
     .concat([
         {
+          id : "shanbaydict",
           name : "扇贝词典",
           enabled : true,
           url : "http://www.shanbay.com/api/word/{{text}}",
@@ -189,6 +191,7 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
           }
         },
         {
+          id : "googletran",
           name : "谷歌翻译",
           enabled : true,
           url : "http://translate.google.com/translate_a/t?client=t&text={{text}}&hl=en&sl=auto&tl=zh-CN&multires=1&otf=2&ssel=0&tsel=0&uptl=zh-CN&sc=1",
@@ -251,6 +254,7 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
           }
         },
         {
+          id : "wikizh",
           name : "维基百科",
           enabled : true,
           url : "http://zh.wikipedia.org/wiki/{{text}}",
@@ -317,6 +321,7 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
           }
         },
         {
+          id : "wikien",
           name : "WikiPedia", //meta data copied from 维基百科中文
           enabled : true,
           url : "http://en.wikipedia.org/wiki/{{text}}",

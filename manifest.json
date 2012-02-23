@@ -19,5 +19,6 @@
       "css": ["css/selection.css"],
       "all_frames": true
     }
-  ]
+  ],
+    "options_page": "options.html"
 }
