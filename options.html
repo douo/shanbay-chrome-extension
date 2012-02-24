@@ -13,12 +13,13 @@ div#wrapper div.engine {
 	margin-top: 20px;
 }
 
-div#wrapper label, div#wrapper input {
+div#wrapper label,div#wrapper input {
 	cursor: pointer;
 }
 </style>
 
 <script type="text/javascript">
+  //使用属性初始化界面
   function initOption() {
     if (typeof localStorage.options == "undefined") {
       localStorage.options = JSON.stringify({
@@ -50,16 +51,26 @@ div#wrapper label, div#wrapper input {
       }
     }
   }
-
+  
+  //切换某个选项的选中状态
   function switchCheck(id) {
     var attrs = id.split("_");
-    id = "#" + id;
+    var sid = "#" + id;
     var options = JSON.parse(localStorage.options);
-    options[attrs[1]][attrs[2]] = $(id).prop("checked");
+    options[attrs[1]][attrs[2]] = $(sid).prop("checked");
     localStorage.options = JSON.stringify(options);
     
-    $(id).parent().children("div").children("input").not($(id)).prop(
-        "disabled", !$(id).prop("checked") || $(id).prop("disabled"));
+    setChildrenEnabled(id);
+  }
+  
+  //设置某个选项的子项是否可用
+  function setChildrenEnabled(id) {
+    var sid = "#" + id;
+    var disabled = !$(sid).prop("checked") || $(sid).prop("disabled");
+    $(sid).parent().children("div").children("input").not($(sid)).each(function() {
+      $(this).prop("disabled", disabled);
+      setChildrenEnabled(this.id);
+    });
   }
 
   $(function() {
