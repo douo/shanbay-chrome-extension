@@ -6,8 +6,45 @@
 	<link href="/css/main.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="json.js"> </script>
 	<script type="text/javascript" src="base.js"> </script>
+	<script type="text/javascript">
+  //使用属性初始化界面
+  function initOption() {
+    if (typeof localStorage.options == "undefined") {
+      localStorage.options = JSON.stringify({
+        global : {
+          enabled : true
+        },
+        shanbaydict : {
+          enabled : true,
+          autoadd : false
+        },
+        googletran : {
+          enabled : true
+        },
+        wikizh : {
+          enabled : true
+        },
+        wikien : {
+          enabled : true
+        }
+      })
+    }
 
-    <body onload="checkLogin();">
+    var options = JSON.parse(localStorage.options);
+  
+    document.getElementById('selection_global_enabled').checked=options.global.enabled;
+  }
+  
+  function switchGlobalEnable() {
+     var options = JSON.parse(localStorage.options);
+     options.global.enabled = !options.global.enabled;
+     document.getElementById('selection_global_enabled').checked= options.global.enabled;
+     localStorage.options = JSON.stringify(options);
+  }
+  
+
+</script>
+    <body onload="initOption();checkLogin();">
 	
 	<table id="maintable" cellpadding="1" width="230px" align="center"> 	
 		<tbody><tr><td> 
@@ -20,13 +57,19 @@
 		</td></tr>
 		<tr><td> 
 		
-		<div width="230" id="result">  </div> 
+		<div width="230" id="result"></div> 
+		<div></div>
 		</td></tr>
 		<audio id="sound" preload="auto">
 		</audio>
 		<tr><td> 
-		<tr><td> 
-		<div id="foot" style=" "><a href="options.html" target="_blank">选项</a> &nbsp;<a id="feedback" href="#" onclick="goURL(&quot;http://code.google.com/p/shanbay-chrome-extension/&quot;);">反馈</a></div>
+		    </tr></td>
+		<tr><td>
+		<div id="foot">
+		  <span onclick="switchGlobalEnable()">
+		    <input id="selection_global_enabled" type="checkbox" /><label>开启划词</label></span>&nbsp;<a href="options.html" target="_blank">选项</a> &nbsp;<a id="feedback" href="#" onclick="goURL(&quot;http://code.google.com/p/shanbay-chrome-extension/&quot;);">反馈</a>	
+		</div> 
+	
 		</td></tr> 
 	</tbody></table>
 </body></html>

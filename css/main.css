@@ -8,9 +8,8 @@ word-wrap: break-all;
 #foot{
 font-size:10px;
 float:right;
-position: absolute;
-bottom: 1px;
-right: 1px;
+bottom: 0px;
+right: 0px;
 }
 .wd {
 color : #ec5800;
@@ -38,6 +37,8 @@ font-family : normal Arial, Helvetica, sans-serif;
 color : #444;
 font-size : 12px;
 min-width:230px;
+margin-bottom:0px;
+margin-right:0px
 }
 
 .definition, .exnt li, .ex li, #user-ex li, .nt li, .userexnt li {
