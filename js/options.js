@@ -12,12 +12,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 if (typeof localStorage.options === "undefined") {
   localStorage.options = JSON.stringify({
     global : {
-      enabled : true
+	enabled  : true,
+        ctrlmask : false
     },
     shanbaydict : {
-      enabled : true,
-      autoadd : false,
-      autoplay: true
+      enabled  : true,
+      autoadd  : false,
+      autoplay : true
     },
     googletran : {
       enabled : true
