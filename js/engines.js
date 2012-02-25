@@ -129,8 +129,8 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
             if (typeof result.voc.id == "undefined") {
               return [ this.name, "词典中没有找到选择的内容" ];
             }
-
-            var caption = this.getTitle(result);
+	      // 根据设置决定是否自动播放读音  :Tiao Lims
+              var caption = this.getTitle(result,this.$option.autoplay);
 
             if (result.learning_id == 0) {
               this.result = result;
