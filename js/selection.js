@@ -11,6 +11,8 @@
  *  
  * 2012-2-25 Tiao Lims <dourokinga@gmail.com>
  * 为扇贝引擎添加自动播放读音的开关
+ * 为全局取词增加ctrl键开关
+ * 更改options.html的switchCheck方法,只有更改引擎的总开关才切换子项。
  * 
  * 2012-2-24 MalFurion.StormRage@gmail.com
  * 加入选项，现在可以配置引擎
@@ -278,8 +280,8 @@ ShanbayChromeExtension._getValidSelection = function() {
 
 //监听鼠标释放事件
 ShanbayChromeExtension.onSelect = function(event) {
-  if (event.button != 0) //left button
-    return;
+    if (event.button != 0) //left button
+	return;
 
   if (this._isMouseOnDiv == true) {
     return;
@@ -308,12 +310,14 @@ ShanbayChromeExtension.onSelect = function(event) {
     action : "getOptions"
   }, function(response) {
     console.log(JSON.stringify(response));
+     if(response.global.ctrlmask&&!event.ctrlKey) //当开启ctrl取词时,只有按住ctrl键才能取词
+	 return;
     thisObj.queryAndShow(text, response);
   });
 }
 
 ShanbayChromeExtension.queryAndShow = function(text, options) {
-  if (options.global.enabled === false)
+    if (options.global.enabled === false)
     return;
 
   var i, flag = false;

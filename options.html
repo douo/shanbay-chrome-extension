@@ -24,7 +24,8 @@ div#wrapper label,div#wrapper input {
     if (typeof localStorage.options == "undefined") {
       localStorage.options = JSON.stringify({
         global : {
-          enabled : true
+          enabled  : true,
+          ctrlmask : false
         },
         shanbaydict : {
           enabled : true,
@@ -60,8 +61,8 @@ div#wrapper label,div#wrapper input {
     var options = JSON.parse(localStorage.options);
     options[attrs[1]][attrs[2]] = $(sid).prop("checked");
     localStorage.options = JSON.stringify(options);
-    
-    setChildrenEnabled(id);
+    if(attrs[2]=="enabled")  // 只有更改引擎的总开关才切换子项
+      setChildrenEnabled(id);
   }
   
   //设置某个选项的子项是否可用
@@ -103,6 +104,7 @@ div#wrapper label,div#wrapper input {
 			<h1>扇贝Chrome扩展属性设置</h1>
 			<div id="selection">
 				<input id="selection_global_enabled" type="checkbox" /><label>开启划词搜索</label>
+				<input id="selection_global_ctrlmask" type="checkbox" /><label>开启Ctrl取词</label>
 				<div class="engine">
 					<input id="selection_shanbaydict_enabled" type="checkbox" /><label>启用扇贝词典</label>
 					<div id="selection_shanbaydict">
