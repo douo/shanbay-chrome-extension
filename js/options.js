@@ -16,7 +16,8 @@ if (typeof localStorage.options === "undefined") {
     },
     shanbaydict : {
       enabled : true,
-      autoadd : false
+      autoadd : false,
+      autoplay: true
     },
     googletran : {
       enabled : true

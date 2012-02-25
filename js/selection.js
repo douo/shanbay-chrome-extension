@@ -8,6 +8,9 @@
  * ----ChangeLog----
  * TODO：
  * 选项应该从引擎配置中读取
+ *  
+ * 2012-2-25 Tiao Lims <dourokinga@gmail.com>
+ * 为扇贝引擎添加自动播放读音的开关
  * 
  * 2012-2-24 MalFurion.StormRage@gmail.com
  * 加入选项，现在可以配置引擎
