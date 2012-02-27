@@ -6,47 +6,8 @@
 	<link href="/css/main.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="json.js"> </script>
 	<script type="text/javascript" src="base.js"> </script>
-	<script type="text/javascript">
-  //使用属性初始化界面
-  function initOption() {
-    if (typeof localStorage.options == "undefined") {
-      localStorage.options = JSON.stringify({
-        global : {
-          enabled  : true,
-          ctrlmask : false
-        },
-        shanbaydict : {
-          enabled : true,
-          autoadd : false,
-          autoplay: true
-        },
-        googletran : {
-          enabled : true
-        },
-        wikizh : {
-          enabled : true
-        },
-        wikien : {
-          enabled : true
-        }
-      })
-    }
 
-    var options = JSON.parse(localStorage.options);
-  
-    document.getElementById('selection_global_enabled').checked=options.global.enabled;
-  }
-  
-  function switchGlobalEnable() {
-     var options = JSON.parse(localStorage.options);
-     options.global.enabled = !options.global.enabled;
-     document.getElementById('selection_global_enabled').checked= options.global.enabled;
-     localStorage.options = JSON.stringify(options);
-  }
-  
-
-</script>
-    <body onload="initOption();checkLogin();">
+    <body onload="init();">
 	
 	<table id="maintable" cellpadding="1" width="230px" align="center"> 	
 		<tbody><tr><td> 
