@@ -1,20 +1,3 @@
-/*
-learning_id, 如果用户之前保存过该单词，那么就存在对应的词汇学习记录（Learning）实例，会返回它的id；注意词汇学习记录实例和词汇实例的id是不同的；如果没有相应词汇学习记录，那么这个返回值为0，同时应用可以提示用户添加该单词
-voc:词汇实例
-    en_definitions: object, 一个Json Dictionary 对象，索引为词性，值为英语解释
-    definition: string, 词汇的中文解释
-    content: string, 词汇的内容，也就是单词本身
-    content_id: int, 词汇实例的id
-    content_type: vocabulary|sentence, 只可能为两个字符串值，'vocabulary'或者'sentence'，目前尚不支持'sentence'
-    pron:string, 用国际音标表示的单词发音
-    audio:string, 词汇的音频文件
-
-*/
-
-var  QUERY_API=host+'/api/word/{{word}}';
-var ADD_WORD_API=host+'/api/learning/add/{{word}}';
-var ADD_EXAMPLE_API = host+'/api/example/add/{{learning_id}}?sentence={{sentence}}&translation={{translation}}';
-
 var gWord;
 
 function query(word){
@@ -200,17 +183,4 @@ function firstFocus(elemt){
     }
 }
 
-
-
-
-
-//未做错误处理,参数以{{.+}}标记
-function getAPIURL(api,args){
-    var i, result=api,lens = arguments.length;
-    for(i=1;i<lens;i++){
-	result = result.replace(/{{.+?}}/, arguments[i]);
-    }
-    return result;
-    
-}
 
