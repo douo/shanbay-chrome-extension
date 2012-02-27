@@ -2,6 +2,15 @@ var version="0.3.1.4";
 var logged;
 var host="http://www.shanbay.com";
 
+/** API **/
+var QUERY_API=host+'/api/word/{{word}}';
+var ADD_WORD_API=host+'/api/learning/add/{{word}}';
+var ADD_EXAMPLE_API = host+'/api/example/add/{{learning_id}}?sentence={{sentence}}&translation={{translation}}';
+var USER_INFO_API = host + '/api/user/info/';
+
+/** 未登录使用接口 **/
+var  E_QUERY_API=host+'/bdc/search/word/?{{word}}';
+
 
 
 function init(){
@@ -48,61 +57,57 @@ function switchGlobalEnable() {
   
 
 function checkLogin(){
-    chrome.cookies.get(
-    {
-        "url" : host,
-        "name" : "userid"
-    }, 
-    function(cookie){
-	if(cookie){
-	    userid = cookie.value;
-	    chrome.cookies.get(
-		{
-		    "url" : host,
-		    "name" : "username"
-		}, 
-		function(cookie)
-		{
-		    if(cookie){
-			username = cookie.value;
-			logged=true;
-			loadJS('jsonquery.js');
-			data='<span class="username"><a href="#" onclick="goURL(&quot;'+host+'/user/list/'+username+'/&quot;)">'+username+'</a></span>';
-			var res = document.getElementById('ubar');
-			res.innerHTML = data;
-		    }
-		}
-	    );	
+    handleJSONFromURL(USER_INFO_API,
+      function(user){
+	if(user&&user['result']==1){
+	    username = user['nickname'];
+	    logged=true;
+	    loadJS('jsonquery.js');
+	    data='<span class="username"><a href="#" onclick="goURL(&quot;'+host+'/home/&quot;)">'+username+'</a></span>';
+	    var res = document.getElementById('ubar');
+	    res.innerHTML = data;		    		
 	}else{
 	    logged = false;
 	    loadJS('query.js');
 	    data='<span class="username"><a href="#" onclick="goURL(&quot;'+host+'/accounts/login/&quot;)">鐧诲綍</a></span>';
 	    var res = document.getElementById('ubar');
 	    res.innerHTML = data;
-	    
 	}
-    }
-    );
+	  
+      });
     document.getElementById('word').focus();
-    //setTimeout(checkUpdate,500);
 }
-function checkUpdate(){
+
+
+//未做错误处理,参数以{{.+}}标记
+function getAPIURL(api,args){
+    var i, result=api,lens = arguments.length;
+    for(i=1;i<lens;i++){
+	result = result.replace(/{{.+?}}/, arguments[i]);
+    }
+    return result;
+    
+}
+
+function handleJSONFromURL(url,handler){
     var req = new XMLHttpRequest();
-	req.onreadystatechange = function(data) {
-          if (req.readyState == 4) {
-            if (req.status == 200) {
+     req.onreadystatechange = function(data) {
+	// alert(req.readyState+"  "+ req.status);
+	if (req.readyState == 4) {
+	    if (req.status == 200) {
 		var data = req.responseText;
-		if(data[0]=='1'){
-		    document.getElementById('feedback').innerHTML= '&nbsp;<a style="color: red;" href="#" onclick="goURL(&quot;http://code.google.com/p/shanbay-chrome-extension/&quot;);">鏂扮増鏈琻ew!</a>';
-		}else if(data[0]=='3'){
-		    document.getElementById('foot').innerHTML=data.slice(1);
+		try{
+		    var obj= data.parseJSON();
+		    handler(obj);
+		}catch(error){
+		    console.log(error);
+		    handler();
 		}
-            }
-          }
-        }
-	var url = 'http://toys.dourok.info/sbce.php?version='+version;
-	req.open('GET', url , true);
-	req.send(null);
+	    }
+	}
+}
+    req.open('GET', url , true);
+    req.send(null);
 }
 
 function goURL(url){
@@ -115,6 +120,7 @@ function play_single_sound() {
     document.getElementById('sound').play();
     document.getElementById('word').focus();
 }
+
 
 //http://www.somacon.com/p355.php  or http://blog.stevenlevithan.com/archives/faster-trim-javascript
 function trim(stringToTrim) {

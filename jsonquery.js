@@ -214,18 +214,3 @@ function getAPIURL(api,args){
     
 }
 
-function handleJSONFromURL(url,handler){
-    var req = new XMLHttpRequest();
-     req.onreadystatechange = function(data) {
-	// alert(req.readyState+"  "+ req.status);
-	if (req.readyState == 4) {
-	    if (req.status == 200) {
-		var data = req.responseText;
-		var obj= data.parseJSON();
-		handler(obj);
-	    }
-	}
-}
-    req.open('GET', url , true);
-    req.send(null);
-}

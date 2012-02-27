@@ -9,7 +9,7 @@ function query(word){
     document.getElementsByTagName("html")[0].style.height="100px"; //神奇的是加了这句代码就可以自适应
     waitForQuery();
     word = trim(word).toLowerCase();
-    handleJSONFromURL("http://www.shanbay.com/bdc/search/word/?word="+word,handleWord);
+    handleJSONFromURL(getAPIURL(E_QUERY_API,word),handleWord);
 }
 
 
@@ -99,23 +99,6 @@ function handleWord(word){
 	//result.innerHTML+= ('<input type="button" onclick="goURL(&quot;http://shanbay.com/search/fail/'+escape(word)+'/&quot;)" value="添加" title="添加为短语或句子">');
     }
 }
-
-function handleJSONFromURL(url,handler){
-    var req = new XMLHttpRequest();
-     req.onreadystatechange = function(data) {
-	// alert(req.readyState+"  "+ req.status);
-	if (req.readyState == 4) {
-	    if (req.status == 200) {
-		var data = req.responseText;
-		var obj= data.parseJSON();
-		handler(obj);
-	    }
-	}
-}
-    req.open('GET', url , true);
-    req.send(null);
-}
-
 
 
 // 已过时 
