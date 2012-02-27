@@ -1,6 +1,52 @@
-var version="0.2.2";
+var version="0.3.1.4";
 var logged;
 var host="http://www.shanbay.com";
+
+
+
+function init(){
+    checkLogin();
+    initOption();
+}
+
+  //使用属性初始化界面
+function initOption() {
+    if (typeof localStorage.options == "undefined") {
+      localStorage.options = JSON.stringify({
+        global : {
+          enabled  : true,
+          ctrlmask : false
+        },
+        shanbaydict : {
+          enabled : true,
+          autoadd : false,
+          autoplay: true
+        },
+        googletran : {
+          enabled : true
+        },
+        wikizh : {
+          enabled : true
+        },
+        wikien : {
+          enabled : true
+        }
+      })
+    }
+
+    var options = JSON.parse(localStorage.options);
+  
+    document.getElementById('selection_global_enabled').checked=options.global.enabled;
+  }
+  
+function switchGlobalEnable() {
+     var options = JSON.parse(localStorage.options);
+     options.global.enabled = !options.global.enabled;
+     document.getElementById('selection_global_enabled').checked= options.global.enabled;
+     localStorage.options = JSON.stringify(options);
+  }
+  
+
 function checkLogin(){
     chrome.cookies.get(
     {
