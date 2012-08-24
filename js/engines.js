@@ -202,7 +202,7 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
           name : "谷歌翻译",
           enabled : true,
           url : "http://translate.google.com/translate_a/t?client=t&text={{text}}&hl=en&sl=auto&tl=zh-CN&multires=1&otf=2&ssel=0&tsel=0&uptl=zh-CN&sc=1",
-          urlHome : "http://translate.google.com",
+          urlHome : "http://translate.google.com/",
           urlAudio : "http://translate.google.cn/translate_tts?ie=UTF-8&q={{text}}&tl={{lang}}&prev=input",
           type : "html",
           filter : function(text) {
@@ -230,7 +230,7 @@ ShanbayChromeExtension._engineMeta = ShanbayChromeExtension._engineMeta
                 //                this.$$generateClickableLink("发音", "play").add(
                 this.$$generateLink("发音", this.urlAudio.replace("{{text}}",
                     this.$text).replace("{{lang}}", result[2]))).add(
-                this.$$generateLink("打开", this.urlHome));
+                this.$$generateLink("打开", this.urlHome+"?text="+this.$text));
 
             var content = "";
             var i;
